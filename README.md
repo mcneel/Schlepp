@@ -20,6 +20,25 @@ The project targets `net48` and `net8.0` together. The .NET Framework reference
 assemblies come in as a NuGet package, so both targets build on macOS and Linux
 as well as Windows — no Windows machine is needed to produce a complete package.
 
+## Debugging
+
+`launch.json` is git-ignored, since it has to name a particular Rhino installation.
+Create one with a `coreclr` launch configuration whose `program` is the Rhino
+executable — on macOS that is
+`/Applications/RhinoBETA.app/Contents/MacOS/Rhinoceros` — and a `preLaunchTask` of
+`build-debug`.
+
+Then install the plugin once, by hand, through Grasshopper's `GH2Plugins` command,
+pointing it at `Schlepp/bin/Debug/net8.0/Schlepp.rhp`. Grasshopper records the path
+and reloads it on every subsequent start, re-examining the file whenever its
+timestamp changes, so rebuilding is enough — there is no need to install again.
+
+Setting `RHINO_PACKAGE_DIRS` to the build folder also makes Rhino discover the
+plugin without installing it, and it exercises the same runtime-variant resolution
+a real package install goes through. It is the more faithful test, but it has been
+seen to intermittently mis-bind the `Grasshopper2` reference and fail while
+harvesting types, so the manual install is the reliable choice for day-to-day work.
+
 ## Packaging and publishing
 
 ```
