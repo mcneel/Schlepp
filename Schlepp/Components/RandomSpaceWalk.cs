@@ -22,7 +22,7 @@ namespace Schlepp
     /// Default constructor.
     /// </summary>
     public RandomSpaceWalk()
-      : base(new Nomen("Random Space Walk", "Generate a random walk in unbounded 3D space.", "Schlepp", "Walks"))
+      : base(new Nomen("Random Space Walk", "Generate a random walk in unbounded 3D space.", "Maths", "Random", 1111, Rank.Obscure))
     { }
 
     /// <summary>
