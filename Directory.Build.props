@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+    <!-- One language version for every target, so a feature that compiles for
+         net8.0 cannot silently break the net48 build on a machine which only
+         ever builds one of them. C# 10 is the highest net48 supports. -->
+    <LangVersion>10</LangVersion>
+
+    <NoWarn>CS1591;NU1701;CA1416</NoWarn>
+
+    <!-- XML doc comment mismatches are errors, same as the Grasshopper repository. -->
+    <WarningsAsErrors>CS1570;CS1571;CS1572;CS1573;CS1574;CS1580;CS1581;CS1584;CS1587;CS1589;CS1590;CS1592;CS1710;CS1711;CS1712;CS1723;CS1734;CS1735</WarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Grasshopper reads AssemblyCopyright for Plugin.Copyright and AssemblyCompany
+       as the fallback for Plugin.Author. Without these the SDK invents a company
+       name from the bare assembly name. The {now} placeholder is expanded to the
+       current year when the plugin loads, so the year does not freeze at build time. -->
+  <PropertyGroup>
+    <Company Condition="$(Company) == ''">Robert McNeel &amp; Associates</Company>
+    <Copyright Condition="$(Copyright) == ''">Copyright &#169; Robert McNeel &amp; Associates {now}</Copyright>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+    <AssemblyName>Schlepp</AssemblyName>
+    <RootNamespace>Schlepp</RootNamespace>
+    <TargetExt>.rhp</TargetExt>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Plugin identity. Grasshopper's Plugin base class reads all of this from
+       the generated assembly attributes, so it is stated once, here. Keep the
+       version in step with manifest.yml. -->
+  <PropertyGroup>
+    <AssemblyTitle>Schlepp</AssemblyTitle>
+    <Description>Random walk algorithms for Grasshopper.</Description>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grasshopper2" Version="9.0.26230.12303-beta" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+  </ItemGroup>
+
+  <!-- Lets the net48 target build on macOS and Linux too, so a full dual-runtime
+       package can be produced without a Windows machine. -->
+  <ItemGroup Condition="$(TargetFramework) == 'net48'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Grasshopper matches a *.ghicon resource to the class of the same name. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\**\*.ghicon" />
+  </ItemGroup>
+
+</Project>

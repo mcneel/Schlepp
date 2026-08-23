@@ -1,0 +1,15 @@
+---
+name: schlepp
+version: 0.1.0
+authors:
+  - Robert McNeel & Associates
+description: >
+  Random walk algorithms for Grasshopper 2. A small collection of components
+  which generate walks, drifts and wanders in two and three dimensions.
+url: https://github.com/mcneel/Schlepp
+keywords:
+  - grasshopper
+  - grasshopper2
+  - random
+  - walk
+  - stochastic
