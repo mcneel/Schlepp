@@ -12,9 +12,6 @@ using Grasshopper2.Types.Fields;
 
 namespace Schlepp
 {
-  /// <summary>
-  /// An isotropic random walk of fixed step length, in three dimensions.
-  /// </summary>
   [IoId("000d2b23-7d7f-4760-9d92-934278455854")]
   public sealed class RandomSpaceWalk : Component
   {
@@ -33,8 +30,8 @@ namespace Schlepp
 
     protected override void AddInputs(InputAdder inputs)
     {
-      inputs.AddPoint("Start", "St", "Start location of walk.").Set(Point3d.Origin);
-      inputs.AddInteger("Steps", "Sp", "Number of steps to take.").Set(100);
+      inputs.AddPoint("Start", "Pt", "Start location of walk.").Set(Point3d.Origin);
+      inputs.AddInteger("Steps", "Sn", "Number of steps to take.").Set(100);
       inputs.AddField("Stride", "St", "Length of a single step.").Set(1.0);
       inputs.AddRandom("used to drive the walk.");
     }
@@ -60,10 +57,13 @@ namespace Schlepp
       var here = start;
       for (var i = 0; i < steps; i++)
       {
+        // Inverted on purpose. A field evaluates to NaN outside its domain, and
+        // NaN fails every comparison, so 'step < 1e-12' would wave it through and
+        // fill the rest of the walk with NaN.
         var step = Math.Abs(stride.ScalarAt(here));
-        if (step < 1e-12)
+        if (!(step > 1e-12))
         {
-          access.AddWarning("Zero Stride", "The stride distance dropped to zero, signaling the premature end of the random walk.");
+          access.AddWarning("Zero Stride", "The stride distance dropped to zero or became undefined, signaling the premature end of the random walk.");
           break;
         }
 
