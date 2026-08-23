@@ -57,3 +57,7 @@ nunit-*.xml
 # Yak packaging output
 dist/
 *.yak
+
+# VS Code: the shared configs are committed, but launch.json holds absolute
+# paths to a particular Rhino installation and is per-developer.
+.vscode/launch.json
