@@ -8,6 +8,7 @@ using Grasshopper2.UI;
 using Grasshopper2.Components;
 using Grasshopper2.Extensions;
 using Grasshopper2.Types.Random;
+using Grasshopper2.Types.Fields;
 
 namespace Schlepp
 {
@@ -15,49 +16,43 @@ namespace Schlepp
   /// An isotropic random walk of fixed step length, in three dimensions.
   /// </summary>
   [IoId("000d2b23-7d7f-4760-9d92-934278455854")]
-  public sealed class RandomWalkComponent : Component
+  public sealed class RandomSpaceWalk : Component
   {
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public RandomWalkComponent()
-      : base(new Nomen("Random Walk", "Generate an isotropic random walk of fixed step length.", "Schlepp", "Walks"))
+    public RandomSpaceWalk()
+      : base(new Nomen("Random Space Walk", "Generate a random walk in unbounded 3D space.", "Schlepp", "Walks"))
     { }
 
     /// <summary>
     /// Deserialisation constructor.
     /// </summary>
     /// <param name="reader">Reader to deserialise from.</param>
-    public RandomWalkComponent(IReader reader) : base(reader) { }
+    public RandomSpaceWalk(IReader reader) : base(reader) { }
 
     protected override void AddInputs(InputAdder inputs)
     {
-      inputs.AddPoint("Start", "St", "Point where the walk begins.").Set(Point3d.Origin);
+      inputs.AddPoint("Start", "St", "Start location of walk.").Set(Point3d.Origin);
       inputs.AddInteger("Steps", "Sp", "Number of steps to take.").Set(100);
-      inputs.AddNumber("Length", "Ln", "Length of a single step.").Set(1.0);
+      inputs.AddField("Stride", "St", "Length of a single step.").Set(1.0);
       inputs.AddRandom("used to drive the walk.");
     }
 
     protected override void AddOutputs(OutputAdder outputs)
     {
-      outputs.AddPolyline("Walk", "Wk", "Polyline through every visited position.");
+      outputs.AddPolyline("Walk", "Pl", "Polyline representing the walked path.");
+      outputs.AddPoint("Terminus", "Pt", "End of walk.");
     }
 
     protected override void Process(IDataAccess access)
     {
       access.GetItem(0, out Point3d start);
       access.GetItem(1, out int steps);
-      access.GetItem(2, out double length);
+      access.GetItem(2, out Field stride);
       access.GetItem(3, out RandomEngine engine);
 
-      access.RectifyNonNegative(ref steps, "Steps");
-      access.RectifyPositive(ref length, "Length");
-
-      if (steps == 0)
-      {
-        access.SetItem(0, new Polyline(new[] { start }));
-        return;
-      }
+      access.RectifyPositive(ref steps, "Steps");
 
       var random = engine.CreateInstance();
       var walk = new Polyline(steps + 1) { start };
@@ -65,11 +60,23 @@ namespace Schlepp
       var here = start;
       for (var i = 0; i < steps; i++)
       {
-        here += random.NextUnitVector3D() * length;
+        var step = Math.Abs(stride.ScalarAt(here));
+        if (step < 1e-12)
+        {
+          access.AddWarning("Zero Stride", "The stride distance dropped to zero, signaling the premature end of the random walk.");
+          break;
+        }
+
+        here += random.NextUnitVector3D() * step;
         walk.Add(here);
       }
 
-      access.SetItem(0, walk);
+      if (walk.Count >= 2)
+        access.SetItem(0, walk);
+      else
+        access.AddWarning("Empty Walk", "A valid walk needs at least a single step.");
+
+      access.SetItem(1, walk.Last);
     }
   }
 }
