@@ -5,7 +5,7 @@ authors:
   - Robert McNeel & Associates
 description: >
   Random walk algorithms for Grasshopper 2. A small collection of components
-  which generate walks, drifts and wanders in two and three dimensions.
+  for performing and analysing random walks.
 url: https://github.com/mcneel/Schlepp
 keywords:
   - grasshopper

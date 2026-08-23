@@ -1,10 +1,6 @@
 # Schlepp
 
-Random walk algorithms for [Grasshopper 2](https://www.rhino3d.com/), distributed
-through the Rhino package manager (Yak).
-
-A schlepp is a long, aimless haul. That is what these components do: they take a
-starting position and wander off, one step at a time.
+Random walk algorithms for [Grasshopper 2](https://www.rhino3d.com/).
 
 ## Requirements
 

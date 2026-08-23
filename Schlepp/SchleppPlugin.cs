@@ -21,6 +21,6 @@ namespace Schlepp
     /// <summary>
     /// Gets the licence agreement, or a web address at which to find it.
     /// </summary>
-    public override string LicenceAgreement => "https://opensource.org/license/mit";
+    public override string LicenceAgreement => "https://github.com/mcneel/Schlepp/blob/main/LICENSE";
   }
 }
