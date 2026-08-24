@@ -15,7 +15,7 @@
   <PropertyGroup>
     <AssemblyTitle>Schlepp</AssemblyTitle>
     <Description>Random walk algorithms for Grasshopper.</Description>
-    <Version>2.0.0-beta</Version>
+    <Version>2.0.1-beta</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -64,3 +64,6 @@ dist/
 
 # Grasshopper2 autosaves
 *.ghautosave
+
+# Yak login token cache — this yak build writes it into the working directory
+.mcneel/
