@@ -74,10 +74,12 @@ namespace Schlepp
       // the right trade for the many containment queries a walk makes. Using it
       // for the start too keeps every verdict consistent with the ones the walk
       // itself will get.
-      if (!region.ContainsFast(start))
+      switch (region.Contains(start))
       {
-        access.AddError("Errant Start", "The start point is not inside the region.");
-        return;
+        case RegionRelation.Outside:
+        case RegionRelation.InHole:
+          access.AddError("Invalid Start", "The start point must lie on the region interior.");
+          return;
       }
 
       // Every boundary — outer loops and holes alike — as world curves, gathered
