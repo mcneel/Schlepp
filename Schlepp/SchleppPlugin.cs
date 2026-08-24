@@ -14,6 +14,18 @@ namespace Schlepp
   public sealed class SchleppPlugin : Grasshopper2.Framework.Plugin
   {
     /// <summary>
+    /// Gets the name of this plugin.
+    /// <para>
+    /// The AssemblyTitle attribute would normally supply this, but a title which
+    /// matches the bare assembly name — as this one does — is indistinguishable
+    /// from the one the SDK generates on its own, so the framework refuses to
+    /// count it as deliberately specified. Overriding the property is the way to
+    /// say the name really is meant.
+    /// </para>
+    /// </summary>
+    public override string Name => "Schlepp";
+
+    /// <summary>
     /// Gets the licence under which this plugin is distributed.
     /// </summary>
     public override string LicenceDescription => "MIT";

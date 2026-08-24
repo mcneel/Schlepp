@@ -67,18 +67,18 @@ subfolder matching the runtime it is hosting.
 Bump `version` in [manifest.yml](manifest.yml) and `<Version>` in
 [Schlepp.csproj](Schlepp/Schlepp.csproj) together before publishing. Yak stamps
 the Rhino version it was built against into the file name, so the package comes
-out as `schlepp-0.1.0-rh9_0-any.yak`.
+out as, for example, `schlepp-2.0.0-beta-rh9_0-any.yak`.
 
 Publish against the test server first:
 
 ```
-yak push --source https://test.yak.rhino3d.com dist/schlepp-0.1.0-rh9_0-any.yak
+yak push --source https://test.yak.rhino3d.com dist/schlepp-<version>-rh9_0-any.yak
 ```
 
 and then, once it installs cleanly, against the real one:
 
 ```
-yak push dist/schlepp-0.1.0-rh9_0-any.yak
+yak push dist/schlepp-<version>-rh9_0-any.yak
 ```
 
 `yak login` is required before the first push.
