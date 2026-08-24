@@ -1,3 +1,5 @@
+using Grasshopper2.UI.Icon;
+
 namespace Schlepp
 {
   /// <summary>
@@ -24,6 +26,8 @@ namespace Schlepp
     /// </para>
     /// </summary>
     public override string Name => "Schlepp";
+
+    public override IIcon Icon => AbstractIcon.FromResource("Schlepp.ghicon", GetType().Assembly);
 
     /// <summary>
     /// Gets the licence under which this plugin is distributed.

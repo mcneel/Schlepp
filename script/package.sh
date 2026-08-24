@@ -53,6 +53,17 @@ done
 
 cp "$root/manifest.yml" "$dist/manifest.yml"
 
+# The package manager shows a tile icon when the manifest names one. The repo
+# manifest deliberately omits the icon field, so that packaging keeps working
+# before the artwork exists: the moment an icon.png appears at the repo root it
+# is picked up and declared here, in the packaged copy of the manifest alone.
+if [[ -f "$root/icon.png" ]]; then
+  cp "$root/icon.png" "$dist/icon.png"
+  printf 'icon: icon.png\n' >> "$dist/manifest.yml"
+else
+  echo "note: no icon.png at the repository root; the package will show a placeholder tile."
+fi
+
 # Documentation ships as a 'Documentation' folder at the package root, beside
 # the runtime folders: Grasshopper resolves it by climbing up out of the netX.Y
 # folder of whichever assembly it loaded, so one copy serves both runtimes.
