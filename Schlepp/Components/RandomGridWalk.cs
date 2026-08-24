@@ -49,17 +49,9 @@ namespace Schlepp
   [IoId("3129ad72-ad43-484d-8065-0bf3e70f0f37")]
   public sealed class RandomGridWalk : Component
   {
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
     public RandomGridWalk()
       : base(new Nomen("Random Grid Walk", "Generate a random walk along the edges of an orthogonal grid.", "Maths", "Random", 1111, Rank.Obscure))
     { }
-
-    /// <summary>
-    /// Deserialisation constructor.
-    /// </summary>
-    /// <param name="reader">Reader to deserialise from.</param>
     public RandomGridWalk(IReader reader) : base(reader) { }
 
     protected override void AddInputs(InputAdder inputs)
@@ -130,9 +122,9 @@ namespace Schlepp
         I = i;
         J = j;
 
-        // Each half is masked down to 32 bits before being packed. Casting a
-        // negative int straight to long sign-extends it, which sets every high
-        // bit and collapses whole rows of the grid onto a single value.
+        // 64-bit cheating hash. Guaranteed no collisions, 
+        // so it's a reliable equality check. But I do wonder if
+        // we really need it.
         H = (uint)i | (long)(uint)j << 32;
       }
 
@@ -190,8 +182,8 @@ namespace Schlepp
     }
     private static List<I2> WalkPivot(Random random, int steps, CancellationToken token)
     {
-      // Start with a straight path, then repeatedly pick pivots 
-      // along it and try to bend the path while avoiding self-intersections.
+      // Start with a straight path, then repeatedly pick pivots along
+      // it and try to bend the path while avoiding self-intersections.
       var cells = new I2[steps + 1];
       var indices = new Dictionary<long, int>(steps + 1);
       for (var i = 0; i <= steps; i++)
@@ -203,22 +195,17 @@ namespace Schlepp
       var pivoted = new I2[steps + 1];
 
       // A handful of accepted pivots per cell is enough to crumple the rod into
-      // a convincing wander, and roughly one attempt in three is accepted at
-      // these lengths, so the attempts are budgeted at a multiple of that.
-      // Raising the multiplier buys statistical quality linearly in time.
-      // A walk of a single step has no cell to pivot about: the two-cell rod
-      // already is every one-step walk there is, up to the symmetry applied at
-      // the end.
+      // a convincing wander. However with most attempts rejected, we'll budget for
+      // 16 pivoting attempts per node.
+      // Lowering this number speeds up the algorithm, but lowers the amount of 
+      // random-ness in the walk.
       var attempts = steps < 2 ? 0L : 16L * steps;
-
-      for (var attempt = 0L; attempt < attempts; attempt++)
+      for (long attempt = 0; attempt < attempts; attempt++)
       {
         token.ThrowIfCancellationRequested();
 
-        // Pick a pivot cell and a symmetry, and transform whichever piece of the
-        // walk is shorter — the walk is translated back onto the origin at the
-        // end, so spinning the head about the pivot is as good as spinning the
-        // tail, and on average half as much work.
+        // Pick a pivot cell and a symmetry, and transform 
+        // whichever piece of the walk is shorter.
         var pivot = random.Next(1, steps);
         var symmetry = random.Next(7);
 
@@ -228,7 +215,6 @@ namespace Schlepp
         else
           (from, until) = (pivot + 1, steps);
 
-        // The moving portion is checked against the statix portion.
         var accepted = true;
         var outward = from == 0 ? until : from;
         var inward = from == 0 ? from : until;
@@ -262,35 +248,16 @@ namespace Schlepp
       // Move the final walk back to the origin.
       var di = cells[0].I;
       var dj = cells[0].J;
-      // var anchor = cells[0];
-      // var origin = new I2(0, 0);
-      // var facing = random.Next(8);
 
       var walk = new List<I2>(steps + 1);
       foreach (var cell in cells)
         walk.Add(new I2(cell.I - di, cell.J - dj));
-      // foreach (var cell in cells)
-      // {
-      //   var anchored = new I2(cell.I - anchor.I, cell.J - anchor.J);
-      //   walk.Add(facing < 7 ? anchored.Symmetry(origin, facing) : anchored);
-      // }
 
       return walk;
     }
     private static List<I2> WalkBacktrack(Random random, int steps, CancellationToken token)
     {
       var walker = new GridWalker(steps);
-
-      // Consecutive entrapments since the walk last put its trouble behind it,
-      // and the length which counts as having done so: the length at the most
-      // recent entrapment. Growing past the spot where the walk last got caught
-      // proves the escape worked; merely regaining the junction proves nothing.
-      // The bar deliberately tracks the latest entrapment rather than the
-      // deepest one ever reached. Requiring the walk to beat its all-time record
-      // sounds stricter, but it spirals: after a deep teardown the record lies
-      // hundreds of trap-free steps away, the escalation then never resets, and
-      // every teardown from there on is a huge one. Walks used to hit a hard
-      // ceiling near a thousand steps that way, with any amount of patience.
       var setbacks = 0;
       var escapeLength = 0;
 
@@ -320,11 +287,6 @@ namespace Schlepp
       return walker.CopyCells();
     }
 
-    /// <summary>
-    /// A self-avoiding walk in progress. The cells of the path double as the
-    /// backtracking stack: taking a step pushes a cell, retreating pops one and
-    /// thereby frees it up for the walk to pass through again later.
-    /// </summary>
     private sealed class GridWalker
     {
       private readonly List<I2> _cells;

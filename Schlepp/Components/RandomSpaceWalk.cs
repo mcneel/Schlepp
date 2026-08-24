@@ -15,17 +15,9 @@ namespace Schlepp
   [IoId("000d2b23-7d7f-4760-9d92-934278455854")]
   public sealed class RandomSpaceWalk : Component
   {
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
     public RandomSpaceWalk()
       : base(new Nomen("Random Space Walk", "Generate a random walk in unbounded 3D space.", "Maths", "Random", 1111, Rank.Obscure))
     { }
-
-    /// <summary>
-    /// Deserialisation constructor.
-    /// </summary>
-    /// <param name="reader">Reader to deserialise from.</param>
     public RandomSpaceWalk(IReader reader) : base(reader) { }
 
     protected override void AddInputs(InputAdder inputs)
@@ -35,7 +27,6 @@ namespace Schlepp
       inputs.AddField("Stride", "St", "Length of a single step.").Set(1.0);
       inputs.AddRandom("used to drive the walk.");
     }
-
     protected override void AddOutputs(OutputAdder outputs)
     {
       outputs.AddPolyline("Walk", "Pl", "Polyline representing the walked path.");

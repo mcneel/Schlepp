@@ -16,17 +16,9 @@ namespace Schlepp
   [IoId("d54d2f29-89a5-48c5-bef9-29a20695d07f")]
   public sealed class RandomSurfaceWalk : Component
   {
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
     public RandomSurfaceWalk()
       : base(new Nomen("Random Surface Walk", "Generate a random walk along a 2D surface.", "Maths", "Random", 1111, Rank.Obscure))
     { }
-
-    /// <summary>
-    /// Deserialisation constructor.
-    /// </summary>
-    /// <param name="reader">Reader to deserialise from.</param>
     public RandomSurfaceWalk(IReader reader) : base(reader) { }
 
     protected override void AddInputs(InputAdder inputs)
@@ -58,18 +50,13 @@ namespace Schlepp
 
       // Resolve the constraint into a single projection up front, rather than
       // re-deciding what kind of geometry it is on every step of the walk.
-      var project = default(Func<Point3d, Plane>);
 
+      Func<Point3d, Plane> project;
       if (constraint is Plane pl)
-      {
         project = PlaneProjector(pl);
-      }
       else if (constraint is Mesh ms)
-      {
         project = MeshProjector(ms);
-      }
       else
-      {
         switch (SurfaceBroker.CastOrConvert(constraint, out var p1, out var p3, out var p4))
         {
           case SurfaceLikeType.Brep:
@@ -88,10 +75,7 @@ namespace Schlepp
             access.AddError("Invalid Constraint", "The surface constraint was not a plane, surface or mesh.");
             return;
         }
-      }
 
-      // The conversions above are all allowed to fail, and a null projector is how
-      // each of them says so.
       if (project is null)
       {
         access.AddError("Invalid Constraint", "The surface constraint could not be turned into something projectable.");
@@ -198,12 +182,8 @@ namespace Schlepp
         if (!brep.ClosestPoint(point, out var p, out var ci, out _, out _, 0.0, out var n))
           return Plane.Unset;
 
-        // Careful: when the closest point falls on an edge rather than inside a
-        // face, ClosestPoint hands back the edge *tangent* instead of a normal.
-        // Taken at face value that tips the walking plane on its side, so a walk
-        // which touches an edge is flung across the surface instead of along it.
-        // Averaging the normals of the faces meeting at the edge gives a frame
-        // which straddles the crease, and a step can then land on either face.
+        // When the closest point falls on an edge rather than on the interior of 
+        // a face, ClosestPoint hands back the edge *tangent* instead of a normal.
         if (ci.ComponentIndexType == ComponentIndexType.BrepEdge)
           n = EdgeNormal(brep, ci.Index, p);
 
@@ -212,9 +192,8 @@ namespace Schlepp
     }
 
     /// <summary>
-    /// Average the normals of every face which meets at a brep edge, evaluated at
-    /// a point on that edge. A naked edge yields the one adjacent face normal, a
-    /// crease the bisector of the two.
+    /// Average the normals of all faces that meet at a brep edge, evaluated at
+    /// a point on that edge.
     /// </summary>
     /// <param name="brep">Brep which owns the edge.</param>
     /// <param name="index">Index of the edge within the brep.</param>
@@ -249,8 +228,6 @@ namespace Schlepp
         total += normal;
       }
 
-      // Two faces folded back onto one another cancel out, leaving no meaningful
-      // average. Either of them is then as good an answer as any.
       if (total.Unitize())
         return total;
 
