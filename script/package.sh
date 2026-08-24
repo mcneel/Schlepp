@@ -53,6 +53,44 @@ done
 
 cp "$root/manifest.yml" "$dist/manifest.yml"
 
+# Documentation ships as a 'Documentation' folder at the package root, beside
+# the runtime folders: Grasshopper resolves it by climbing up out of the netX.Y
+# folder of whichever assembly it loaded, so one copy serves both runtimes.
+# 'Documentation In Progress' is the authoring pipeline; only files which have
+# reached its '5. Finished' stage are published, flattened into the canonical
+# Specs/Terms/Topics shape. Example files are taken wholesale.
+wip="$root/Documentation In Progress"
+if [[ -d "$wip" ]]; then
+  echo "==> gathering finished documentation"
+  for language in "$wip"/*/; do
+    lang="$(basename "$language")"
+
+    for kind in Specs Terms Topics; do
+      finished="$language$kind/5. Finished"
+      [[ -d "$finished" ]] || continue
+
+      files=$(find "$finished" -maxdepth 1 -type f ! -name "__readme.txt" ! -name ".*")
+      [[ -n "$files" ]] || continue
+
+      mkdir -p "$dist/Documentation/$lang/$kind"
+      find "$finished" -maxdepth 1 -type f ! -name "__readme.txt" ! -name ".*" \
+        -exec cp {} "$dist/Documentation/$lang/$kind/" \;
+    done
+
+    for kind in "Example Files" "Images"; do
+      source="$language$kind"
+      [[ -d "$source" ]] || continue
+
+      files=$(find "$source" -maxdepth 1 -type f ! -name "*.ghautosave" ! -name ".*")
+      [[ -n "$files" ]] || continue
+
+      mkdir -p "$dist/Documentation/$lang/$kind"
+      find "$source" -maxdepth 1 -type f ! -name "*.ghautosave" ! -name ".*" \
+        -exec cp {} "$dist/Documentation/$lang/$kind/" \;
+    done
+  done
+fi
+
 yak="$(find_yak)" || {
   echo "Could not find the yak executable. Staged the package contents in $dist and stopped." >&2
   exit 1
