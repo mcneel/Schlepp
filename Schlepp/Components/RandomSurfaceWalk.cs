@@ -108,12 +108,13 @@ namespace Schlepp
       }
 
       var walk = new Polyline(steps + 1) { here.Origin };
-
+      var token = access.Solution.Token;
       for (var i = 0; i < steps; i++)
       {
-        // Inverted on purpose. A field evaluates to NaN outside its domain, and
-        // NaN fails every comparison, so 'step < 1e-12' would wave it through and
-        // fill the rest of the walk with NaN.
+        token.ThrowIfCancellationRequested();
+
+        // Comparison inverted on purpose. A field evaluates to NaN 
+        // outside its domain, and NaN fails every comparison.
         var step = Math.Abs(stride.ScalarAt(here.Origin));
         if (!(step > 1e-12))
         {
