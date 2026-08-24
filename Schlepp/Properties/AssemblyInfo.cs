@@ -7,9 +7,6 @@ using Rhino.PlugIns;
 // indexes plugins by it too: never regenerate this GUID.
 [assembly: Guid("050e2bb5-04fd-4db1-8817-51f3122c280a")]
 
-// Rhino's own plugin-description attributes, which Grasshopper reads too: the
-// author comes from Organization (falling back to AssemblyCompany), the contact
-// from Email. These also fill out the fields Rhino's plugin manager displays.
 [assembly: PlugInDescription(DescriptionType.Organization, "Robert McNeel & Associates")]
 [assembly: PlugInDescription(DescriptionType.Email, "tech@mcneel.com")]
 [assembly: PlugInDescription(DescriptionType.WebSite, "https://github.com/mcneel/Schlepp")]
