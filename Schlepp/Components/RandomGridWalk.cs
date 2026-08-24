@@ -9,6 +9,7 @@ using GrasshopperIO;
 using Grasshopper2.UI;
 using Grasshopper2.Components;
 using Grasshopper2.Types.Random;
+using Grasshopper2.UI.Toolbar;
 
 namespace Schlepp
 {
@@ -92,10 +93,15 @@ namespace Schlepp
       List<I2> walk;
       switch (method)
       {
-        case WalkMethod.Naive: walk = WalkNaïve(random, steps, token); break;
-        case WalkMethod.Pivot: walk = WalkPivot(random, steps, token); break;
-        case WalkMethod.Backtrack: walk = WalkBacktrack(random, steps, token); break;
-
+        case WalkMethod.Naive:
+          walk = WalkNaïve(random, steps, token);
+          break;
+        case WalkMethod.Pivot:
+          walk = WalkPivot(random, steps, token);
+          break;
+        case WalkMethod.Backtrack:
+          walk = WalkBacktrack(random, steps, token);
+          break;
         default:
           access.AddError("Unknown Method", $"There is no walk method number {method}.");
           return;
@@ -174,15 +180,8 @@ namespace Schlepp
         here = here.TurnAndStep(direction);
         walk.Add(here);
 
-        // Three of the four directions are allowed, the forbidden one being the
-        // reversal, and each of the three has to come up equally often. Drawing a
-        // quarter-turn of 0, 1 or 2 and nudging the 2 up to a 3 lands on exactly
-        // those three in a single draw: turning by two quarters is the reversal,
-        // so it is the one value the draw never produces. Rejecting reversals in
-        // a loop is also unbiased, but it cannot promise when it will finish.
         var turn = random.Next(3);
-        if (turn == 2)
-          turn = 3;
+        if (turn == 2) turn = 3;
 
         direction = (direction + turn) & 3;
       }
@@ -191,8 +190,8 @@ namespace Schlepp
     }
     private static List<I2> WalkPivot(Random random, int steps, CancellationToken token)
     {
-      // The straight rod. Every cell is indexed so that collision tests can tell
-      // the immovable part of the walk from the part being pivoted.
+      // Start with a straight path, then repeatedly pick pivots 
+      // along it and try to bend the path while avoiding self-intersections.
       var cells = new I2[steps + 1];
       var indices = new Dictionary<long, int>(steps + 1);
       for (var i = 0; i <= steps; i++)
@@ -201,7 +200,6 @@ namespace Schlepp
         indices[cells[i].H] = i;
       }
 
-      // Scratch space for a transformed piece while it is still on approval.
       var pivoted = new I2[steps + 1];
 
       // A handful of accepted pivots per cell is enough to crumple the rod into
@@ -230,10 +228,7 @@ namespace Schlepp
         else
           (from, until) = (pivot + 1, steps);
 
-        // The moving piece is checked against the piece which stays put: a clash
-        // with a cell of the moving piece itself does not count, since that cell
-        // is about to move away. Checking outward from the pivot finds clashes
-        // soonest, as that is where they are most likely to be.
+        // The moving portion is checked against the statix portion.
         var accepted = true;
         var outward = from == 0 ? until : from;
         var inward = from == 0 ? from : until;
@@ -254,8 +249,6 @@ namespace Schlepp
         if (!accepted)
           continue;
 
-        // The old piece must be fully unindexed before the new one is indexed,
-        // as the two may well overlap.
         for (var i = from; i <= until; i++)
           indices.Remove(cells[i].H);
 
@@ -266,20 +259,21 @@ namespace Schlepp
         }
       }
 
-      // Pivots of the head end move the start of the walk, so anchor it back
-      // onto the origin before handing the cells over. One last symmetry of the
-      // whole walk — or none, all eight being equally likely — costs nothing and
-      // makes the result isotropic even when the walk was too short to pivot.
-      var anchor = cells[0];
-      var origin = new I2(0, 0);
-      var facing = random.Next(8);
+      // Move the final walk back to the origin.
+      var di = cells[0].I;
+      var dj = cells[0].J;
+      // var anchor = cells[0];
+      // var origin = new I2(0, 0);
+      // var facing = random.Next(8);
 
       var walk = new List<I2>(steps + 1);
       foreach (var cell in cells)
-      {
-        var anchored = new I2(cell.I - anchor.I, cell.J - anchor.J);
-        walk.Add(facing < 7 ? anchored.Symmetry(origin, facing) : anchored);
-      }
+        walk.Add(new I2(cell.I - di, cell.J - dj));
+      // foreach (var cell in cells)
+      // {
+      //   var anchored = new I2(cell.I - anchor.I, cell.J - anchor.J);
+      //   walk.Add(facing < 7 ? anchored.Symmetry(origin, facing) : anchored);
+      // }
 
       return walk;
     }
