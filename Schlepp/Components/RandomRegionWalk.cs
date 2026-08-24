@@ -70,10 +70,6 @@ namespace Schlepp
       var plane = region.Plane;
       start = plane.ClosestPoint(start);
 
-      // ContainsFast builds a spatial cache on its first call, which is exactly
-      // the right trade for the many containment queries a walk makes. Using it
-      // for the start too keeps every verdict consistent with the ones the walk
-      // itself will get.
       switch (region.Contains(start))
       {
         case RegionRelation.Outside:
