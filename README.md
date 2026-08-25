@@ -54,52 +54,6 @@ called `Documentation` next to the plugin assembly, climbing up out of the
 runtimes. Language subfolders (`English` and so on) are picked based on the
 user's language settings.
 
-## Packaging and publishing
-
-```
-script/package.sh
-```
-
-This builds both runtimes into `dist/`, one subfolder per target framework,
-copies `manifest.yml` alongside them, and runs `yak build`. Rhino resolves the
-subfolder matching the runtime it is hosting.
-
-Bump `version` in [manifest.yml](manifest.yml) and `<Version>` in
-[Schlepp.csproj](Schlepp/Schlepp.csproj) together before publishing. Yak stamps
-the Rhino version it was built against into the file name, so the package comes
-out as, for example, `schlepp-2.0.0-beta-rh9_0-any.yak`.
-
-Publish against the test server first:
-
-```
-yak push --source https://test.yak.rhino3d.com dist/schlepp-<version>-rh9_0-any.yak
-```
-
-and then, once it installs cleanly, against the real one:
-
-```
-yak push dist/schlepp-<version>-rh9_0-any.yak
-```
-
-`yak login` is required before the first push.
-
-Yak harvests the plugin `[assembly: Guid]` and every component `IoId` into the
-package keywords by itself, which is how the server can tell a document which
-package supplies a component it is missing.
-
-## Adding a component
-
-Copy [RandomWalkComponent.cs](Schlepp/RandomWalkComponent.cs) and give the new
-class a fresh `IoId` GUID. The GUID identifies the component in saved documents
-for good, so generate a new one rather than editing digits by hand:
-
-```
-uuidgen | tr 'A-Z' 'a-z'
-```
-
-An icon is picked up automatically from a `*.ghicon` resource in `Icons/` whose
-file name matches the class name.
-
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
