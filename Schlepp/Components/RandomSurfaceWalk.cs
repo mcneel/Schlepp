@@ -29,7 +29,7 @@ namespace Schlepp
       inputs.AddInteger("Steps", "Sn", "Number of steps to take.").Set(100);
       inputs.AddField("Stride", "St", "Length of a single step.").Set(1.0);
       inputs.AddGeneric("Surface", "Sf", "Surface constraint. May be a plane, a surface or a mesh.").Set(sphere);
-      inputs.AddRandom("used to drive the walk.");
+      inputs.AddRandom("Random engine used to drive the walk.");
     }
 
     protected override void AddOutputs(OutputAdder outputs)

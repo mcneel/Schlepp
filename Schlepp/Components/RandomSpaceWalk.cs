@@ -25,7 +25,7 @@ namespace Schlepp
       inputs.AddPoint("Start", "Pt", "Start location of walk.").Set(Point3d.Origin);
       inputs.AddInteger("Steps", "Sn", "Number of steps to take.").Set(100);
       inputs.AddField("Stride", "St", "Length of a single step.").Set(1.0);
-      inputs.AddRandom("used to drive the walk.");
+      inputs.AddRandom("Random engine used to drive the walk.");
     }
     protected override void AddOutputs(OutputAdder outputs)
     {

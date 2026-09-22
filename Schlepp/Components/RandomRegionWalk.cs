@@ -37,7 +37,7 @@ namespace Schlepp
       inputs.AddInteger("Steps", "Sn", "Number of steps to take.").Set(100);
       inputs.AddRegion("Region", "Rg", "Region").Set(region);
       inputs.AddFunction("Stride", "St", "Stride size as a function of distance to region boundary.").Set(new LinearFunction(0.5, 0.0));
-      inputs.AddRandom("used to drive the walk.");
+      inputs.AddRandom("Random engine used to drive the walk.");
     }
     protected override void AddOutputs(OutputAdder outputs)
     {

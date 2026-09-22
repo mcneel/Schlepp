@@ -60,7 +60,7 @@ namespace Schlepp
       inputs.AddInteger("Steps", "Sn", "Number of steps to take.").Set(100);
       inputs.AddNumber("Stride", "St", "Length of a single step.").Set(1.0);
       inputs.AddEnum("Method", "Md", "Walk generation algorithm.", WalkMethod.Backtrack);
-      inputs.AddRandom("used to drive the walk.");
+      inputs.AddRandom("Random engine used to drive the walk.");
     }
     protected override void AddOutputs(OutputAdder outputs)
     {
