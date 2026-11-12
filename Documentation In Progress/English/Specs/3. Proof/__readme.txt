@@ -1,1 +1,0 @@
-This folder contains files which have been written, but need to be proofed by someone other than the author, unless the author is a certified linguist and capable of objectively and critically evaluating their own work. Are you?

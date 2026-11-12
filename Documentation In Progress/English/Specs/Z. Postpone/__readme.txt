@@ -1,1 +1,0 @@
-This folder contains files that have been abandoned for the time being as neither the proofreader nor the author know how to proceed to fix the remaining issues.

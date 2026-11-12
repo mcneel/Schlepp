@@ -1,2 +1,0 @@
-This folder contains files which have been modified by the proofreader and require validation by the original author to ensure the changes did not alter the meaning or correctness. 
-If the author decides to make changes to the proofed content, the file must be moved back into the 'Proof' state.
